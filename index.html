@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Otanjoubi omedetou Wulan Ayu D.W.</title>
+
+<style>
+  :root{ --glass: rgba(0,0,0,0.45); }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg,#0b0712 0%, #1b1530 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+  }
+
+  /* START SCREEN */
+  #startScreen{
+    position: fixed; inset:0;
+    background: linear-gradient(#ffb7f5, #ff75e6);
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center; z-index:1000;
+  }
+  #startScreen.hidden { display: none; }
+  #startScreen h2{ font-size:26px; color:#fff; text-shadow:0 0 10px #ff00f7; margin-bottom:18px; animation:floatUp 2s infinite; }
+  #openBtn{ padding:16px 32px; font-size:22px; border-radius:30px; border:none; background:#ff29f5; color:#fff; cursor:pointer; box-shadow:0 0 15px #ff00ea; animation:pulse 1.5s infinite; }
+
+  @keyframes pulse{ 0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)} }
+  @keyframes floatUp{ 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
+
+  /* MESSAGE (CENTERED) */
+  #messageBox{ position:fixed; inset:0; display:none; justify-content:center; align-items:center; z-index:20; pointer-events:none; }
+  #messageContent{
+    width:90%; max-width:540px; background:var(--glass); padding:28px; border-radius:22px;
+    text-align:center; color:#fff; font-size:20px; pointer-events:auto; position:relative; overflow:visible;
+    animation:popIn .9s ease-out forwards;
+  }
+  /* neon title will have dynamic color from JS */
+  #messageContent h1{ font-size:26px; margin-bottom:12px; }
+  #typedText{ font-size:18px; white-space:pre-line; line-height:1.5; text-shadow:0 0 8px #ff90ff; min-height:120px; margin-bottom:12px; }
+
+  .bigHeart{ font-size:48px; display:inline-block; margin-top:8px; transform-origin:center; animation:beat 1.2s infinite; filter:drop-shadow(0 0 12px rgba(255,80,180,0.85)); }
+  @keyframes beat{ 0%{transform:scale(1)}25%{transform:scale(1.12)}50%{transform:scale(0.95)}75%{transform:scale(1.08)}100%{transform:scale(1)} }
+
+  @keyframes popIn{ 0%{opacity:0; transform:scale(0.8)} 60%{opacity:1; transform:scale(1.02)} 100%{transform:scale(1)} }
+  @keyframes glow{ 0%{text-shadow:0 0 10px #ff6eff} 50%{text-shadow:0 0 20px #fff,0 0 35px #ff70ff} 100%{text-shadow:0 0 10px #ff6eff} }
+
+  .btnRow{ display:flex; gap:12px; justify-content:center; margin-top:12px; }
+  .btn{ padding:10px 18px; background:#ff4bd1; border-radius:20px; color:#fff; border:none; cursor:pointer; font-weight:600; }
+  .btn.secondary{ background: rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.06); }
+
+  /* LOVE FLOATING */
+  .love{ position:fixed; bottom:-20px; pointer-events:none; animation:floatLove 4s linear forwards; will-change:transform,opacity; }
+  @keyframes floatLove{ 0%{transform:translateY(0) translateX(0) scale(1); opacity:1} 50%{transform:translateY(-50vh) translateX(10vw) scale(1.2); opacity:0.9} 100%{transform:translateY(-110vh) translateX(-8vw) scale(1.6); opacity:0} }
+
+  .popEmoji{ position:fixed; font-size:35px; animation:popEmojiAnim .6s ease-out forwards; pointer-events:none; }
+  @keyframes popEmojiAnim{ 0%{transform:scale(0); opacity:0} 60%{transform:scale(1.5); opacity:1} 100%{transform:scale(1); opacity:.6} }
+
+  /* FIREWORK CANVAS */
+  #canvas{ position:fixed; inset:0; z-index:5; display:block; }
+
+  /* END SCREEN - use grid to guarantee perfect centering */
+  #endScreen{
+    position:fixed; inset:0; display:none; z-index:2000;
+    background: linear-gradient(180deg, rgba(10,8,20,0.95), rgba(20,12,40,0.95));
+    display:grid; place-items:center; text-align:center; padding:20px; color:#fff;
+  }
+  #endInner{
+    max-width:760px; width:90%; display:flex; flex-direction:column; gap:18px; align-items:center;
+  }
+  #endScreen h2{ font-size:34px; margin:0; color:#ffd6f4; text-shadow:0 0 12px rgba(255,160,220,0.6); }
+  #endScreen p{ max-width:640px; line-height:1.5; color:#f3dff1; margin:0; }
+
+  /* signature absolute but won't affect layout */
+  #signature{
+    position: absolute; right:18px; bottom:14px; font-size:16px; opacity:0.85; color:#ffd6f4;
+    font-style:italic; text-shadow:0 0 8px rgba(255,160,220,0.6); pointer-events:none;
+  }
+
+  /* Neon glowing date/time (base style) */
+  .neonTime{
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    line-height: 1;
+    color: #ffdaff;
+    text-align: center;
+    -webkit-text-stroke: 0.4px rgba(0,0,0,0.12);
+    text-shadow:
+      0 0 6px rgba(255,150,255,0.85),
+      0 0 12px rgba(255,110,255,0.75),
+      0 0 22px rgba(255,80,200,0.55),
+      0 6px 18px rgba(0,0,0,0.35);
+    animation: neonPulse 2.6s ease-in-out infinite;
+    transform-origin: center;
+    backdrop-filter: blur(2px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,0,160,0.02));
+    box-shadow: 0 6px 30px rgba(255,60,160,0.06), inset 0 -1px 0 rgba(255,255,255,0.02);
+    display: inline-block;
+  }
+
+  @keyframes neonPulse {
+    0% {
+      transform: scale(1);
+      text-shadow:
+        0 0 6px rgba(255,150,255,0.75),
+        0 0 12px rgba(255,110,255,0.65),
+        0 0 20px rgba(255,80,200,0.45);
+    }
+    50% {
+      transform: scale(1.03);
+      text-shadow:
+        0 0 12px rgba(255,200,255,0.98),
+        0 0 22px rgba(255,150,255,0.88),
+        0 0 44px rgba(255,110,200,0.7);
+    }
+    100% {
+      transform: scale(1);
+      text-shadow:
+        0 0 6px rgba(255,150,255,0.75),
+        0 0 12px rgba(255,110,255,0.65),
+        0 0 20px rgba(255,80,200,0.45);
+    }
+  }
+
+  /* smallNeon for tighter & smaller date/birth lines */
+  #timeWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2px;   /* lebih rapat */
+  gap: 0px;             /* tidak ada jarak sama sekali */
+}
+
+  .smallNeon{
+    font-size: 14px;
+    padding: 3px 8px;
+    opacity: 0.95;
+  }
+  @media (min-width:600px){ .smallNeon{ font-size:16px; } }
+  @media (min-width:1000px){ .smallNeon{ font-size:18px; } }
+  @media (max-width:420px){ .smallNeon{ font-size:12px; padding:2px 6px } }
+
+  /* neon title with base defaults (color overridden by JS) */
+  .neonTitle{
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.05;
+    margin: 6px 0 12px 0;
+    color: #ffd6f4;
+    text-align: center;
+    transition: transform .45s ease, color .45s ease, text-shadow .45s ease;
+    -webkit-text-stroke: 0.8px rgba(0,0,0,0.12);
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,0,160,0.02));
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  @media (min-width: 600px) { .neonTitle{ font-size: 36px; } }
+  @media (min-width:1000px) { .neonTitle{ font-size: 42px; } }
+  @media (max-width:420px){ .neonTitle{ font-size:20px; padding:6px 8px } }
+
+</style>
+</head>
+<body>
+
+<!-- AUDIO (do not autoplay on load) -->
+<audio id="bgm" src="http://bit.ly/3LTPnj4" loop></audio>
+
+<!-- START -->
+<div id="startScreen" aria-modal="true" role="dialog">
+  <h2>🎀 Ada pesan spesial untukmu 🎀</h2>
+  <button id="openBtn">💌 Buka Pesan</button>
+</div>
+
+<!-- MESSAGE -->
+<div id="messageBox" aria-hidden="true">
+  <div id="messageContent" role="document" aria-labelledby="title">
+    
+    <!-- Title (neon, random color applied via JS) -->
+    <h1 id="title" class="neonTitle" role="heading" aria-live="polite">
+       🎉 Otanjoubi omedetou 🎉<br>
+        WULAN AYU D.W.
+    </h1>
+
+    <!-- Birth + Current datetime (tight & neon) -->
+    <div id="timeWrapper">
+      <p id="birthInfo" class="neonTime smallNeon" aria-live="polite"></p>
+      <p id="currentDateTime" class="neonTime smallNeon" aria-live="polite"></p>
+    </div>
+    <p id="typedText" aria-live="polite"></p>
+
+    <div id="heartWrap">
+      <span class="bigHeart" aria-hidden="true">❤️</span>
+    </div>
+
+    <div class="btnRow" style="margin-top:16px;">
+      <!-- Selesai awalnya disembunyikan; tampilkan setelah typing selesai -->
+      <button id="finishBtn" class="btn secondary" style="display:none;">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<!-- END -->
+<div id="endScreen" role="dialog" aria-modal="true">
+  <div id="endInner">
+    <h2>Terima kasih telah membuka pesan 🎀</h2>
+    <p>Semoga hari ini penuh berkah 
+    dan kebahagiaan yaa. 
+    oh iya ini ada gift buat Wulan
+      klik tombol ambil giftnya yaaa :)</p>
+    <div class="btnRow">
+      <button id="replayBtn" class="btn">Mainkan Lagi</button>
+      <button id="backStartBtn" class="btn secondary">Ambil gift</button>
+    </div>
+  </div>
+
+  <!-- signature -->
+  <div id="signature">from Bubby</div>
+</div>
+
+<!-- CANVAS FIREWORK -->
+<canvas id="canvas"></canvas>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ----------------------------
+     Birth + Current Date/Time
+     ---------------------------- */
+  function updateBirthInfo() {
+    const birthDate = new Date(2004, 0, 1); // 01 Januari 2004
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    const birthString = "01 - 01 - 2004";
+    document.getElementById("birthInfo").innerText =
+      `📅 Lahir: ${birthString} (${age} Tahun)`;
+  }
+
+  function updateDateTime() {
+    const dt = new Date();
+
+    const day = String(dt.getDate()).padStart(2,'0');
+    const month = String(dt.getMonth()+1).padStart(2,'0');
+    const year = dt.getFullYear();
+
+    const time = dt.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    document.getElementById("currentDateTime").innerText =
+      `${day} - ${month} - ${year} — ${time}`;
+  }
+
+  // initial + intervals
+  updateBirthInfo();
+  updateDateTime();
+  const dtInterval = setInterval(updateDateTime, 1000);
+
+  /* ----------------------------
+     Elements & UI behavior
+     ---------------------------- */
+  const startScreen = document.getElementById("startScreen");
+  const openBtn = document.getElementById("openBtn");
+  const bgm = document.getElementById("bgm");
+  const messageBox = document.getElementById("messageBox");
+  const typedText = document.getElementById("typedText");
+  const finishBtn = document.getElementById("finishBtn");
+  const endScreen = document.getElementById("endScreen");
+  const replayBtn = document.getElementById("replayBtn");
+  const backStartBtn = document.getElementById("backStartBtn");
+
+  // initial explicit states (guard against CSS/JS race)
+  startScreen.style.display = "flex";
+  messageBox.style.display = "none";
+  endScreen.style.display = "none";
+  finishBtn.style.display = "none";
+  typedText.textContent = "";
+
+  let heartInterval = null;
+  let emojiInterval = null;
+  let i = 0;
+  let typingTimeout = null;
+
+  // start experience - only via click
+  openBtn.addEventListener("click", startExperience);
+
+  function startExperience() {
+    // hide start, show message
+    startScreen.style.display = "none";
+    messageBox.style.display = "flex";
+    messageBox.setAttribute('aria-hidden','false');
+
+    // play bgm now that user interacted
+    bgm.currentTime = 0;
+    bgm.play().catch(()=>{/* ignore autoplay block */});
+
+    // reset typing state
+    typedText.textContent = "";
+    i = 0;
+    finishBtn.style.display = "none";
+    typeMessage();
+
+    // spawn hearts + emoji
+    if (heartInterval) clearInterval(heartInterval);
+    if (emojiInterval) clearInterval(emojiInterval);
+    heartInterval = setInterval(spawnLove, 450);
+    emojiInterval = setInterval(spawnEmoji, 1200);
+  }
+
+  /* Typing effect */
+  const message =
+  `Semoga dihari ulang tahun ini 
+  penuh dengan kebahagiaan, tawa,
+  dan cinta dari orang-orang terdekat. 😄
+
+  Mudah-mudahan tahun depan
+  membawa lebih banyak kesuksesan,
+  kesehatan, dan impian yang tercapai. 🌟
+
+  Dari hati ke hati, Otanjoubi omedetou! 🎂❤️
+  Dan Selamat Tahun Baru 🎉`;
+
+  function typeMessage(){
+    if (i < message.length) {
+      typedText.textContent += message.charAt(i);
+      i++;
+      typingTimeout = setTimeout(typeMessage, 38);
+    } else {
+      // selesai mengetik -> tampilkan tombol Selesai
+      finishBtn.style.display = "inline-block";
+      finishBtn.focus();
+    }
+  }
+
+  /* Love animation */
+  function spawnLove(){
+    const love = document.createElement("div");
+    love.className = "love";
+    const sizes = [18,22,26,30,36];
+    const colors = ["❤️","💖","💕","💘","💞"];
+    love.innerHTML = colors[Math.floor(Math.random()*colors.length)];
+    const left = Math.random() * 100;
+    love.style.left = `${left}vw`;
+    love.style.fontSize = `${sizes[Math.floor(Math.random()*sizes.length)]}px`;
+    love.style.opacity = (0.7 + Math.random()*0.3).toString();
+    const dur = 3500 + Math.random()*2500;
+    love.style.animationDuration = dur + "ms";
+
+    document.body.appendChild(love);
+    setTimeout(()=> { love.remove(); }, dur + 200);
+  }
+
+  /* Emoji popping */
+  function spawnEmoji() {
+    const emojiList = ["🎉","✨","🌟","🥳","🎀"];
+    const emoji = document.createElement("div");
+    emoji.className = "popEmoji";
+    emoji.innerHTML = emojiList[Math.floor(Math.random()*emojiList.length)];
+
+    emoji.style.left = (Math.random()*80+10)+"vw";
+    emoji.style.top = (Math.random()*60+20)+"vh";
+
+    document.body.appendChild(emoji);
+    setTimeout(() => emoji.remove(), 600);
+  }
+
+  /* Finish / End */
+  finishBtn.addEventListener("click", showEndScreen);
+
+  function showEndScreen(){
+    // guard: only allow if messageBox is currently visible (prevents accidental early calls)
+    if (messageBox.style.display === "none") return;
+
+    // stop intervals & typing
+    if (heartInterval) { clearInterval(heartInterval); heartInterval = null; }
+    if (emojiInterval) { clearInterval(emojiInterval); emojiInterval = null; }
+    if (typingTimeout) { clearTimeout(typingTimeout); typingTimeout = null; }
+
+    // hide message and show end screen (grid centers content)
+    messageBox.style.display = "none";
+    messageBox.setAttribute('aria-hidden','true');
+    endScreen.style.display = "grid";
+
+    // pause bgm
+    try { bgm.pause(); } catch(e){}
+  }
+
+  /* Replay / Back */
+  replayBtn.addEventListener("click", ()=> location.reload());
+  backStartBtn.addEventListener("click", ()=>{
+    // opens link in new tab
+    window.open("https://id.shp.ee/jjVwRJq", "_blank");
+  });
+
+  /* Firework effect */
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+  window.addEventListener("resize", () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+
+  let fireworks = [];
+  let particles = [];
+
+  class Firework {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = h;
+      this.targetY = Math.random() * (h/2);
+      this.speed = 6 + Math.random()*2;
+      this.color = `hsl(${Math.random()*360},100%,60%)`;
+    }
+    update() {
+      this.y -= this.speed;
+      if (this.y <= this.targetY) {
+        for (let i = 0; i < 36; i++) particles.push(new Particle(this.x,this.y,this.color));
+        return true;
+      }
+      return false;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,2.5,0,Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  class Particle {
+    constructor(x,y,color){
+      this.x=x; this.y=y; this.color=color;
+      this.speed=Math.random()*3+1.5;
+      this.angle=Math.random()*Math.PI*2;
+      this.alpha=1;
+    }
+    update(){
+      this.x+=Math.cos(this.angle)*this.speed;
+      this.y+=Math.sin(this.angle)*this.speed + 0.6;
+      this.alpha-=0.02;
+      return this.alpha<=0;
+    }
+    draw(){
+      ctx.globalAlpha=this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,2.5,0,Math.PI*2);
+      ctx.fillStyle=this.color;
+      ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  }
+
+  function loop(){
+    ctx.fillStyle="rgba(3,3,6,0.22)";
+    ctx.fillRect(0,0,w,h);
+    if (Math.random() < 0.06) fireworks.push(new Firework());
+    fireworks = fireworks.filter(f=>{ f.draw(); return !f.update(); });
+    particles = particles.filter(p=>{ p.draw(); return !p.update(); });
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* Accessibility: Enter to open from start */
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && startScreen.style.display !== "none") {
+      startExperience();
+    }
+  });
+
+  /* ----------------------------
+     Neon Title - random color pulse
+     ---------------------------- */
+  (function setupNeonTitle(){
+    const title = document.getElementById("title");
+    if (!title) return;
+
+    let intervalId = null;
+
+    function applyNeon(hue){
+      // main color (light neon)
+      const main = `hsl(${hue} 100% 72%)`;
+      const glow1 = `hsl(${hue} 100% 60% / 0.95)`;
+      const glow2 = `hsl(${hue} 95% 50% / 0.72)`;
+      const outer = `hsl(${hue} 80% 40% / 0.45)`;
+
+      title.style.color = main;
+      title.style.textShadow =
+        `0 0 8px ${glow1}, 0 0 18px ${glow2}, 0 0 34px ${outer}, 0 8px 28px rgba(0,0,0,0.45)`;
+      // tiny scale pulse so change feels lively
+      title.style.transform = `scale(${1 + (Math.random()*0.04)})`;
+    }
+
+    function pickAndApply(){
+      const hue = Math.floor(Math.random()*360);
+      applyNeon(hue);
+    }
+
+    pickAndApply();
+    intervalId = setInterval(pickAndApply, 1200);
+
+    // pause/resume on visibility change to save CPU
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (intervalId) clearInterval(intervalId);
+        intervalId = null;
+      } else {
+        if (!intervalId) intervalId = setInterval(pickAndApply, 1200);
+        pickAndApply();
+      }
+    });
+  })();
+
+}); // DOMContentLoaded
+</script>
+</body>
+</html>
