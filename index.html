@@ -323,6 +323,99 @@
             overflow-y: auto;
         }
 
+        /* PROFILE PHOTO INSIDE MESSAGE BOX */
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .profile-photo-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-photo-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-photo-wrapper:hover .profile-photo {
+            box-shadow: 0 0 40px rgba(255, 75, 209, 0.9), 0 0 60px rgba(255, 110, 200, 0.7);
+            border-color: #ff00f7;
+        }
+
+        /* Hanya tampilkan tooltip di desktop */
+        @media (hover: hover) and (pointer: fine) {
+            .profile-photo-wrapper::after {
+                content: "Klik untuk lihat Instagram 💖";
+                position: absolute;
+                bottom: -45px;
+                left: 50%;
+                transform: translateX(-50%) translateY(10px);
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+                white-space: nowrap;
+                opacity: 0;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                z-index: 31;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(5px);
+            }
+            
+            .profile-photo-wrapper:hover::after {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .profile-photo {
+            width: clamp(90px, 20vw, 150px);
+            height: clamp(90px, 20vw, 150px);
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--pink);
+            box-shadow: 0 0 25px rgba(255, 75, 209, 0.7);
+            animation: photoGlow 3s infinite alternate;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        @keyframes photoGlow {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 75, 209, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 35px rgba(255, 75, 209, 0.9), 0 0 50px rgba(255, 110, 200, 0.5);
+            }
+        }
+
+        .photo-decoration {
+            position: absolute;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .photo-decoration.top {
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            animation: floatUp 2s infinite;
+        }
+
+        .photo-decoration.bottom {
+            bottom: -15px;
+            right: -10px;
+            font-size: 1.2rem;
+            animation: sparkleTwinkle 1.5s infinite;
+        }
+
         /* neon title will have dynamic color from JS */
         #messageContent h1 {
             font-size: clamp(1.2rem, 5vw, 1.8rem);
@@ -885,6 +978,11 @@
                 font-size: 1.5rem;
                 margin-top: 0.2rem;
             }
+
+            .profile-photo {
+                width: 70px;
+                height: 70px;
+            }
         }
 
         /* Landscape orientation adjustments */
@@ -909,6 +1007,11 @@
                 min-height: 50px;
                 font-size: 0.7rem;
             }
+
+            .profile-photo {
+                width: 70px;
+                height: 70px;
+            }
         }
 
         /* Very large screens */
@@ -926,132 +1029,132 @@
                 font-size: 1.8rem;
                 padding: 1.5rem 3rem;
             }
+            
+            .profile-photo {
+                width: 160px;
+                height: 160px;
+            }
         }
 
         /* ----- Cute Loading Overlay ----- */
         #cuteLoadingOverlay {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  flex-direction:column;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-          position: fixed;
-          inset: 0;
-          display: none;
-          z-index: 9999;
-          background: linear-gradient(180deg, rgba(10,8,20,0.95), rgba(30,12,40,0.9));
-          align-items: center;
-          justify-content: center;
-          gap: 1rem;
-          flex-direction: column;
-          color: #fff;
-          padding: 1.5rem;
-          text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            position: fixed;
+            inset: 0;
+            display: none;
+            z-index: 9999;
+            background: linear-gradient(180deg, rgba(10,8,20,0.95), rgba(30,12,40,0.9));
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-direction: column;
+            color: #fff;
+            padding: 1.5rem;
+            text-align: center;
         }
         #cuteLoadingOverlay .loaderBar {
-          width: min(420px, 80%);
-          height: 10px;
-          background: rgba(255,255,255,0.08);
-          border-radius: 999px;
-          overflow: hidden;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+            width: min(420px, 80%);
+            height: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
         }
         #cuteLoadingOverlay .loaderFill {
-          width: 0%;
-          height: 100%;
-          border-radius: 999px;
-          background: linear-gradient(90deg, #ff6bd1, #ffd36b);
-          transition: width 400ms linear;
+            width: 0%;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ff6bd1, #ffd36b);
+            transition: width 400ms linear;
         }
 
         /* whisper messages */
         .whisperMsg {
-          position: absolute;
-          pointer-events: none;
-          font-size: clamp(0.75rem, 2.5vw, 1.05rem);
-          padding: 0.35rem 0.6rem;
-          border-radius: 999px;
-          background: rgba(255,255,255,0.06);
-          backdrop-filter: blur(4px);
-          color: #fff;
-          transform: translateY(0);
-          opacity: 0;
-          transition: transform 600ms cubic-bezier(.2,.9,.3,1), opacity 600ms;
-          box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            position: absolute;
+            pointer-events: none;
+            font-size: clamp(0.75rem, 2.5vw, 1.05rem);
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            transform: translateY(0);
+            opacity: 0;
+            transition: transform 600ms cubic-bezier(.2,.9,.3,1), opacity 600ms;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
         }
 
         /* sakura petals */
         .sakura-petal {
-          position: fixed;
-          font-size: clamp(12px, 3.2vw, 26px);
-          will-change: transform, opacity;
-          z-index: 2500;
-          pointer-events: none;
-          opacity: 0.95;
-          transform: translate3d(0,0,0);
+            position: fixed;
+            font-size: clamp(12px, 3.2vw, 26px);
+            will-change: transform, opacity;
+            z-index: 2500;
+            pointer-events: none;
+            opacity: 0.95;
+            transform: translate3d(0,0,0);
         }
 
         /* tiny bunny hop */
         .tiny-bunny {
-          position: fixed;
-          bottom: 6vh;
-          left: -80px;
-          font-size: clamp(20px, 5.5vw, 48px);
-          z-index: 1500;
-          pointer-events: none;
-          transform-origin: center;
-          animation: bunnyHop 3.6s ease-in-out infinite;
+            position: fixed;
+            bottom: 6vh;
+            left: -80px;
+            font-size: clamp(20px, 5.5vw, 48px);
+            z-index: 1500;
+            pointer-events: none;
+            transform-origin: center;
+            animation: bunnyHop 3.6s ease-in-out infinite;
         }
         @keyframes bunnyHop {
-          0%   { transform: translateX(0) translateY(0) rotate(0); }
-          25%  { transform: translateX(25vw) translateY(-28px) rotate(-6deg); }
-          50%  { transform: translateX(50vw) translateY(0) rotate(0); }
-          75%  { transform: translateX(75vw) translateY(-20px) rotate(6deg); }
-          100% { transform: translateX(110vw) translateY(0) rotate(0); }
+            0%   { transform: translateX(0) translateY(0) rotate(0); }
+            25%  { transform: translateX(25vw) translateY(-28px) rotate(-6deg); }
+            50%  { transform: translateX(50vw) translateY(0) rotate(0); }
+            75%  { transform: translateX(75vw) translateY(-20px) rotate(6deg); }
+            100% { transform: translateX(110vw) translateY(0) rotate(0); }
         }
 
         /* shine on buttons */
         .btn.shine {
-          position: relative;
-          overflow: hidden;
+            position: relative;
+            overflow: hidden;
         }
         .btn.shine::after {
-          content: "";
-          position: absolute;
-          top: -40%;
-          left: -45%;
-          width: 30%;
-          height: 180%;
-          background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.45), rgba(255,255,255,0.05));
-          transform: rotate(25deg) translateX(-120%);
-          transition: transform 0.9s ease;
-          pointer-events: none;
+            content: "";
+            position: absolute;
+            top: -40%;
+            left: -45%;
+            width: 30%;
+            height: 180%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+            transform: rotate(25deg) translateX(-120%);
+            transition: transform 0.9s ease;
+            pointer-events: none;
         }
         .btn.shine:hover::after,
         .btn.shine.active-shine::after {
-          transform: rotate(25deg) translateX(220%);
-          transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
+            transform: rotate(25deg) translateX(220%);
+            transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
         }
 
         /* gift explosion emoji bigger */
         .gift-explode {
-          position: fixed;
-          font-size: clamp(20px, 5vw, 36px);
-          pointer-events: none;
-          z-index: 4000;
-          transform-origin: center;
-          will-change: transform, opacity;
-          animation: giftFloatUp 1200ms ease-out forwards;
+            position: fixed;
+            font-size: clamp(20px, 5vw, 36px);
+            pointer-events: none;
+            z-index: 4000;
+            transform-origin: center;
+            will-change: transform, opacity;
+            animation: giftFloatUp 1200ms ease-out forwards;
         }
         @keyframes giftFloatUp {
-          0%   { transform: translateY(0) scale(0.85); opacity: 1; }
-          60%  { transform: translateY(-60px) scale(1.15); opacity: 0.95; }
-          100% { transform: translateY(-120px) scale(0.7); opacity: 0; }
+            0%   { transform: translateY(0) scale(0.85); opacity: 1; }
+            60%  { transform: translateY(-60px) scale(1.15); opacity: 0.95; }
+            100% { transform: translateY(-120px) scale(0.7); opacity: 0; }
         }
     </style>
 </head>
@@ -1075,6 +1178,16 @@
     <!-- MESSAGE -->
     <div id="messageBox" aria-hidden="true">
         <div id="messageContent" role="document" aria-labelledby="title">
+            <!-- Foto profil di dalam kotak pesan -->
+            <div class="profile-container">
+                <div class="profile-photo-wrapper" id="profilePhotoWrapper">
+                    <img src="https://github.com/bobby175/my-porto/blob/main/475526283_639457441974249_5752591344848529673_n.jpg?raw=true" 
+                         alt="Foto Wulan Ayu Dwi Wahyuni" class="profile-photo">
+                    <div class="photo-decoration top">🎀</div>
+                    <div class="photo-decoration bottom">✨</div>
+                </div>
+            </div>
+
             <!-- Title (neon, random color applied via JS) -->
             <h1 id="title" class="neonTitle" role="heading" aria-live="polite">
                 🎉 Otanjoubi Omedetou 🎉<br>
@@ -1207,6 +1320,11 @@
             const endScreen = document.getElementById("endScreen");
             const replayBtn = document.getElementById("replayBtn");
             const giftEndBtn = document.getElementById("giftEndBtn");
+            const profilePhotoWrapper = document.getElementById("profilePhotoWrapper");
+            const profilePhoto = document.querySelector('.profile-photo');
+
+            // Instagram URL
+            const instagramUrl = "https://www.instagram.com/wulan_chaaan_?igsh=MWVkMXlvbm9pNnA0cw==";
 
             // initial explicit states (guard against CSS/JS race)
             startScreen.style.display = "flex";
@@ -1225,6 +1343,71 @@
             let floatingHeartInterval = null;
             let i = 0;
             let typingTimeout = null;
+
+            // Fungsi untuk membuka Instagram
+            function openInstagram() {
+                // Efek visual sebelum membuka
+                createInstagramClickEffect();
+                
+                // Tunggu sebentar untuk efek visual
+                setTimeout(() => {
+                    window.open(instagramUrl, '_blank');
+                }, 300);
+            }
+
+            // Efek visual ketika foto diklik (lebih sederhana)
+            function createInstagramClickEffect() {
+                // Efek glow lebih terang
+                const originalBoxShadow = profilePhoto.style.boxShadow;
+                profilePhoto.style.boxShadow = '0 0 50px rgba(255, 75, 209, 1), 0 0 80px rgba(255, 110, 200, 0.8)';
+                profilePhoto.style.transform = 'scale(1.1)';
+                profilePhoto.style.borderColor = '#ff00f7';
+                
+                // Reset setelah beberapa saat
+                setTimeout(() => {
+                    profilePhoto.style.boxShadow = originalBoxShadow;
+                    profilePhoto.style.transform = 'scale(1)';
+                    profilePhoto.style.borderColor = 'var(--pink)';
+                }, 300);
+                
+                // Efek partikel hati kecil
+                const rect = profilePhoto.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 6; i++) {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '💖';
+                    heart.style.position = 'fixed';
+                    heart.style.left = centerX + 'px';
+                    heart.style.top = centerY + 'px';
+                    heart.style.fontSize = '18px';
+                    heart.style.zIndex = '9998';
+                    heart.style.pointerEvents = 'none';
+                    document.body.appendChild(heart);
+                    
+                    // Animasi partikel
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 25 + Math.random() * 30;
+                    const duration = 400 + Math.random() * 200;
+                    
+                    heart.animate([
+                        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                        { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)'
+                    });
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, duration);
+                }
+            }
+
+            // Event listener untuk klik foto
+            profilePhotoWrapper.addEventListener('click', openInstagram);
+            profilePhoto.addEventListener('click', openInstagram);
 
             // ANIMASI CUTE UNTUK MENU AWAL
             function startMenuAnimations() {
@@ -1816,6 +1999,7 @@
   const openBtnLocal = document.getElementById("openBtn");
   const giftBtnLocal = document.getElementById("giftBtn");
   const giftEndBtnLocal = document.getElementById("giftEndBtn");
+  const profilePhotoWrapper = document.getElementById("profilePhotoWrapper");
 
   /* --------- Cute Loading Overlay --------- */
   const loadingOverlay = document.createElement("div");
@@ -1912,7 +2096,7 @@ try {
 
   /* --------- Whisper messages (No.10) --------- */
   const whisperPool = [
-    "Stay cute 💕", "You’re special 🎀", "Smile more 😄", "Peluk virtual 🤗",
+    "Stay cute 💕", "You're special 🎀", "Smile more 😄", "Peluk virtual 🤗",
     "Senyum dong 😍", "Hore, hari spesialmu!", "Biar makin imut ✨", "Semoga makin bahagia 💖"
   ];
   function spawnWhisper(text, ttl = 1800) {
