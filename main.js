@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const birthdayCountdown = document.getElementById('birthdayCountdown');
 
     /* ==================== UBAH TANGGAL BUKA KEJUTAN  ==================== */
-    const BIRTH_MONTH = 11; // Januari (0=Januari, 1=Februari, ..., 11=Desember)
-    const BIRTH_DATE = 25;
+    const BIRTH_MONTH = 0; // Januari (0=Januari, 1=Februari, ..., 11=Desember)
+    const BIRTH_DATE = 1;
     /* ===================================================================== */
 
     function updateBirthdayCountdown() {
@@ -934,4 +934,5 @@ function typeEndScreen(){
         }, 35);
     }
     typeLine();
+
 }
